@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.cosmos-data/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+data/raw/_probe_summary.json
+eval/results/
+mlflow.db
+mlruns/
+mlartifacts/
+.agents

@@ -1,0 +1,139 @@
+{
+  "prompt_version": "extract-v1",
+  "extraction": {
+    "make": "Genesis",
+    "model": "GV80",
+    "make_he": "ג'נסיס",
+    "model_he": "GV80",
+    "trim": null,
+    "model_year": 2026,
+    "review_type": "road_test",
+    "body_type": "suv",
+    "segment": "large",
+    "powertrain": "ice",
+    "powertrain_evidence_he": "מנוע זה אינו כולל סיוע חשמלי, והקשר היחיד לצמצום זיהום אוויר הוא במערכת דימום-התנעה",
+    "drivetrain": "awd",
+    "transmission": "automatic",
+    "seats": {
+      "value": 7.0,
+      "evidence_he": "והוא זה הנבחן כאן"
+    },
+    "power_hp": {
+      "value": 375.0,
+      "evidence_he": "בנזין כפול-מגדשים, 3.5 ליטר V6 המייצר 375 כ\"ס (5800 סל\"ד)"
+    },
+    "torque_nm": {
+      "value": 530.34,
+      "evidence_he": "ול-54 קג\"מ (1300-4500 סל\"ד)"
+    },
+    "accel_0_100_s": {
+      "value": 6.2,
+      "evidence_he": "משך ההאצה ל-100 קמ\"ש הוא 6.2 שניות"
+    },
+    "top_speed_kmh": {
+      "value": 210.0,
+      "evidence_he": "והמהירות המרבית 210 קמ\"ש"
+    },
+    "price_ils": {
+      "value": 575990.0,
+      "evidence_he": "המחיר החל ב-575,000 שקלים עבור 'אלגנט'"
+    },
+    "battery_kwh": {
+      "value": null,
+      "evidence_he": null
+    },
+    "range_wltp_km": {
+      "value": null,
+      "evidence_he": null
+    },
+    "range_real_km": {
+      "value": null,
+      "evidence_he": null
+    },
+    "dc_charge_kw": {
+      "value": null,
+      "evidence_he": null
+    },
+    "fuel_km_per_l": {
+      "value": 8.1,
+      "evidence_he": "צריכת הדלק הייתה פחות מצוינת, עם 6.1 ק\"מ לליטר במהלך המבחן"
+    },
+    "energy_kwh_per_100km": {
+      "value": null,
+      "evidence_he": null
+    },
+    "trunk_l": {
+      "value": null,
+      "evidence_he": null
+    },
+    "length_mm": {
+      "value": 4940.0,
+      "evidence_he": "אורכו של בסיס הגלגלים 295.5 ס\"מ וזה של המרכב 494 ס\"מ"
+    },
+    "wheelbase_mm": {
+      "value": 2955.0,
+      "evidence_he": "אורכו של בסיס הגלגלים 295.5 ס\"מ"
+    },
+    "pros_he": [
+      "מנוע",
+      "שימושיות",
+      "התנהגות"
+    ],
+    "cons_he": [
+      "צריכת דלק",
+      "איכות חומרים",
+      "נוחות"
+    ],
+    "pros_en": [
+      "Engine",
+      "Practicality",
+      "Handling"
+    ],
+    "cons_en": [
+      "Fuel consumption",
+      "Material quality",
+      "Comfort"
+    ],
+    "verdict_he": "ג'נסיס GV80 לאחר המתיחת פנים מציע מנוע חדש ויכולות דינמיות טובות, אך ניכר כי ישנם פשרות באיכות החומרים וצריכת הדלק. הנוחות טובה אך לא מצטיינת, והמערכות המתקדמות יוצרות סביבת נהג מתקדמת ונעימה. בסך הכל רכב יוקרתי עם כמה חסרונות משמעותיים.",
+    "verdict_en": "The Genesis GV80 after the facelift offers a new engine and good dynamic capabilities, but compromises in material quality and fuel consumption are evident. Comfort is good but not exceptional, and advanced systems create a modern and pleasant driver environment. Overall, a luxury vehicle with some significant drawbacks.",
+    "aspect_scores": {
+      "performance": {
+        "score": 5,
+        "evidence_he": "הביצועים, כצפוי מהנתונים ולמרות המשקל (מעל 2.3 טון) טובים מאוד"
+      },
+      "comfort": {
+        "score": 3,
+        "evidence_he": "נוחות הנסיעה על סיפונו של GV80 טובה, לא מצוינת"
+      },
+      "practicality": {
+        "score": 4,
+        "evidence_he": "ל-GV80 מגיע כעת בתקינה אמריקאית/קנדית וככזה, הוא מצויד במראה שמאלית מקרבת ומעיקה"
+      },
+      "tech": {
+        "score": 4,
+        "evidence_he": "סביבת הנהג חדשה, כוללת רצועת מסכים במקום הסידור ה'קלאסי' שהיה קודם"
+      },
+      "quality": {
+        "score": 3,
+        "evidence_he": "מה שפחות עובר זוהי איכות החומרים – זו טובה ועדיפה ביחס לדגם מלפני העדכון, אבל אלה עדיין פשוטים יחסית"
+      },
+      "value": {
+        "score": null,
+        "evidence_he": null
+      },
+      "efficiency": {
+        "score": 2,
+        "evidence_he": "צריכת הדלק הייתה פחות מצוינת, עם 6.1 ק\"מ לליטר במהלך המבחן"
+      },
+      "fun": {
+        "score": 4,
+        "evidence_he": "זהו רכב שניתן לנהוג אותו מהר ובביטחון בכביש המפותל"
+      }
+    },
+    "tags": [
+      "family",
+      "long_trips",
+      "luxury"
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+# Whole stack:  docker compose up --build   ->  UI http://localhost:8501
+# Needs a .env with the FOUNDRY_* values (copy .env.example). Compose overrides the service URLs below.
+#
+#   cosmos (emulator) -> init (load data once) -> api (FastAPI) -> ui (Streamlit)
+#   mlflow (tracking server + UI) is used by the api
+#
+# Local (venv) development still works: `scripts/dev.ps1 emulator` starts only the `cosmos` service.
+
+x-app: &app
+  image: autochat:latest
+  build: .
+  env_file: .env
+  environment:
+    COSMOS_ENDPOINT: http://cosmos:8081
+    API_BASE_URL: http://api:8000
+    MLFLOW_TRACKING_URI: http://mlflow:5000
+    GIT_PYTHON_REFRESH: quiet  # no git in the image; MLflow run tagging warns otherwise
+
+services:
+  cosmos:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-latest
+    container_name: autochat-cosmos
+    command: ["--protocol", "http", "--enable-telemetry", "false"]
+    ports:
+      - "127.0.0.1:8081:8081"   # Cosmos gateway endpoint (http://localhost:8081)
+      - "127.0.0.1:1234:1234"   # Data Explorer UI (http://localhost:1234)
+      - "127.0.0.1:8080:8080"   # Health probes (/alive, /ready, /status)
+    volumes:
+      # Named volume (inside the Docker VM). A Windows bind mount made every write ~1.5 s (fsync over
+      # the host filesystem): 13x slower, ~25 s of checkpoint I/O per chat turn. Wipe: `docker compose down -v`.
+      - cosmos-data:/data
+    environment:
+      - QUERY_BUFFER_SIZE_KB=16384
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    restart: unless-stopped
+
+  mlflow:
+    <<: *app
+    container_name: autochat-mlflow
+    command:
+      - mlflow
+      - server
+      - --host=0.0.0.0
+      - --port=5000
+      - --workers=1
+      - --backend-store-uri=sqlite:////mlflow/mlflow.db
+      - --artifacts-destination=/mlflow/artifacts
+      - --serve-artifacts
+      - --allowed-hosts=mlflow:5000,localhost:5000,127.0.0.1:5000
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:5000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+      start_period: 20s
+    restart: unless-stopped
+
+  # One-shot: create containers and upsert cars + chunks from the committed data/processed files
+  # (extractions, translations and embeddings are cached, so no LLM calls). Idempotent.
+  # Re-ingest: docker compose run --rm init python -m autochat.ingestion.pipeline --force
+  init:
+    <<: *app
+    container_name: autochat-init
+    command: ["python", "-m", "autochat.ingestion.pipeline"]
+    depends_on:
+      cosmos:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *app
+    container_name: autochat-api
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      mlflow:
+        condition: service_healthy
+    healthcheck:
+      # uvicorn serves only after the lifespan ran (Cosmos client, BM25 index, LLM clients, graph)
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/openapi.json')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  ui:
+    <<: *app
+    container_name: autochat-ui
+    command:
+      - streamlit
+      - run
+      - src/autochat/ui/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+    ports:
+      - "127.0.0.1:8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+volumes:
+  cosmos-data:
+    name: autochat-cosmos-data
+  mlflow-data:
+    name: autochat-mlflow-data

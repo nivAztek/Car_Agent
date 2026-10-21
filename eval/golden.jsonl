@@ -1,0 +1,26 @@
+{"id": "fact-price-mg", "type": "fact", "lang": "en", "turns": ["How much does the MG S6 cost?"], "expect": {"car_ids": ["mg-s6"], "must_contain_any": ["168,888", "168888"]}}
+{"id": "fact-0100-elantra-he", "type": "fact", "lang": "he", "turns": ["מה התאוצה 0-100 של האלנטרה N הידנית?"], "expect": {"car_ids": ["hyundai-elantra-n-manual"], "must_contain_any": ["5.8"]}}
+{"id": "fact-dc-aion", "type": "fact", "lang": "en", "turns": ["What is the DC fast-charging power of the Aion HT?"], "expect": {"car_ids": ["aion-ht"], "must_contain_any": ["163"]}}
+{"id": "fact-fuel-gv80", "type": "fact", "lang": "en", "turns": ["What fuel consumption did the Genesis GV80 get in the test?"], "expect": {"car_ids": ["genesis-gv80-2026"], "must_contain_any": ["6.1", "8.1"]}}
+{"id": "fact-price-c3-he", "type": "fact", "lang": "he", "turns": ["כמה עולה סיטרואן C3 החדשה?"], "expect": {"car_ids": ["citroen-c3-2026"], "must_contain_any": ["114,990", "114990"]}}
+{"id": "fact-real-range-mg", "type": "fact", "lang": "en", "turns": ["What real-world range did MG S6 achieve?"], "expect": {"car_ids": ["mg-s6"], "must_contain_any": ["430"]}}
+{"id": "opinion-rs3-cons", "type": "opinion", "lang": "en", "turns": ["What are the downsides of the Audi RS3?"], "expect": {"car_ids": ["audi-rs3-fl"], "must_contain_any": ["steering", "comfort", "touch", "urban", "city"]}}
+{"id": "opinion-lynk-ride-he", "type": "opinion", "lang": "he", "turns": ["איך הנוחות של לינק אנד קו 01 בעיר?"], "expect": {"car_ids": ["link-and-co-01-2026"]}}
+{"id": "opinion-kia-ev9", "type": "opinion", "lang": "en", "turns": ["What did the long-term report say about living with the Kia EV9?"], "expect": {"car_ids": ["long-term-report-kia-ev9-4"]}}
+{"id": "filter-cheapest-ev", "type": "filter", "lang": "en", "turns": ["Which is the cheapest electric car you reviewed?"], "expect": {"car_ids": ["mg-s6"], "must_contain_any": ["MG S6", "MG"]}}
+{"id": "filter-fastest", "type": "filter", "lang": "en", "turns": ["Which car is the quickest from 0 to 100?"], "expect": {"car_ids": ["audi-rs3-fl"], "must_contain_any": ["3.8"]}}
+{"id": "filter-ev-under-175k-he", "type": "filter", "lang": "he", "turns": ["אילו רכבים חשמליים יש עד 175 אלף שקל?"], "expect": {"car_ids": ["mg-s6"], "must_not_contain": ["Aion", "איון"]}}
+{"id": "filter-ice-under-230k", "type": "filter", "lang": "en", "turns": ["Show me petrol cars under 230k shekels"], "expect": {"car_ids": ["citroen-c3-2026", "hyundai-elantra-n-manual"], "must_not_contain": ["GV80", "RS3"]}}
+{"id": "compare-ev-range", "type": "compare", "lang": "en", "turns": ["Compare the MG S6 and the Aion HT on real range and charging"], "expect": {"car_ids": ["mg-s6", "aion-ht"], "must_contain_all": ["430", "370"]}}
+{"id": "compare-lux-he", "type": "compare", "lang": "he", "turns": ["תשווה בין ג'נסיס GV80 לקיה EV9 למשפחה גדולה"], "expect": {"car_ids": ["genesis-gv80-2026", "long-term-report-kia-ev9-4"]}}
+{"id": "multi-family", "type": "multi_turn", "lang": "en", "turns": ["I need a car for my family", "We are 2 adults and 3 kids, budget around 200k shekels", "I prefer electric. What do you suggest?"], "expect": {"car_ids_any": ["mg-s6", "aion-ht"], "profile": {"budget_max_ils_range": [180000, 220000], "powertrain_pref": ["ev"]}}}
+{"id": "multi-followup-ref", "type": "multi_turn", "lang": "en", "turns": ["Tell me about the Hyundai Elantra N", "Is it comfortable for daily driving?"], "expect": {"car_ids": ["hyundai-elantra-n-manual"]}}
+{"id": "multi-enthusiast-he", "type": "multi_turn", "lang": "he", "turns": ["אני מחפש רכב כיפי לנהיגה", "התקציב שלי עד 250 אלף"], "expect": {"car_ids_any": ["hyundai-elantra-n-manual"]}}
+{"id": "trap-tesla", "type": "abstain", "lang": "en", "turns": ["What is the range of the Tesla Model 3?"], "expect": {"abstain": true, "must_not_contain": ["513", "629", "602"]}}
+{"id": "trap-future-price", "type": "abstain", "lang": "en", "turns": ["What will the MG S6 cost in 2030?"], "expect": {"abstain": true}}
+{"id": "trap-bmw-he", "type": "abstain", "lang": "he", "turns": ["מה דעתך על ב.מ.וו X5?"], "expect": {"abstain": true}}
+{"id": "offtopic", "type": "abstain", "lang": "en", "turns": ["Write me a poem about pizza"], "expect": {"abstain": true, "no_sources": true}}
+{"id": "multi-ordinal-ref", "type": "multi_turn", "lang": "en", "turns": ["Compare the MG S6 and the Kia EV9", "How practical is the second one for a family?"], "expect": {"car_ids": ["long-term-report-kia-ev9-4"]}}
+{"id": "fact-typo-genesis", "type": "fact", "lang": "en", "turns": ["How much does the Genesys GV80 cost?"], "expect": {"car_ids": ["genesis-gv80-2026"], "must_contain_any": ["575,990", "575990"]}}
+{"id": "fact-price-citroen-he", "type": "fact", "lang": "he", "turns": ["כמה עולה הסיטרואן?"], "expect": {"car_ids": ["citroen-c3-2026"], "must_contain_any": ["114,990", "114990"]}}
+{"id": "trap-audi-q5", "type": "abstain", "lang": "en", "turns": ["What is the trunk size of the Audi Q5?"], "expect": {"abstain": true, "must_not_contain": ["520", "550"]}}

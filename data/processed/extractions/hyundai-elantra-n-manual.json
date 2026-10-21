@@ -1,0 +1,139 @@
+{
+  "prompt_version": "extract-v1",
+  "extraction": {
+    "make": "Hyundai",
+    "model": "Elantra N",
+    "make_he": "יונדאי",
+    "model_he": "אלנטרה N",
+    "trim": "ידנית",
+    "model_year": 2023,
+    "review_type": "road_test",
+    "body_type": "sedan",
+    "segment": "compact",
+    "powertrain": "ice",
+    "powertrain_evidence_he": "באלנטרה N מנוע טורבו-בנזין 2.0 ליטר המייצר 276 כ\"ס ב-5500-6000 סל\"ד",
+    "drivetrain": "fwd",
+    "transmission": "manual",
+    "seats": {
+      "value": null,
+      "evidence_he": null
+    },
+    "power_hp": {
+      "value": 276.0,
+      "evidence_he": "באלנטרה N מנוע טורבו-בנזין 2.0 ליטר המייצר 276 כ\"ס ב-5500-6000 סל\"ד"
+    },
+    "torque_nm": {
+      "value": 392.4,
+      "evidence_he": "באלנטרה N מנוע טורבו-בנזין 2.0 ליטר המייצר ... 40 קג\"מ ב-2100-4700 סל\"ד"
+    },
+    "accel_0_100_s": {
+      "value": 5.8,
+      "evidence_he": "משך ההאצה ל-100 קמ\"ש בגרסה זו הוא 5.8 שניות (5.3 ש' בדו-מצמדית)"
+    },
+    "top_speed_kmh": {
+      "value": 250.0,
+      "evidence_he": "והמהירות המרבית 250 קמ\"ש"
+    },
+    "price_ils": {
+      "value": 224900.0,
+      "evidence_he": "מחירה של יונדאי אלנטרה N הוא 225,000 שקלים לגרסה הידנית"
+    },
+    "battery_kwh": {
+      "value": null,
+      "evidence_he": null
+    },
+    "range_wltp_km": {
+      "value": null,
+      "evidence_he": null
+    },
+    "range_real_km": {
+      "value": null,
+      "evidence_he": null
+    },
+    "dc_charge_kw": {
+      "value": null,
+      "evidence_he": null
+    },
+    "fuel_km_per_l": {
+      "value": 10.3,
+      "evidence_he": "צריכת הדלק נעה בין 13.6 ק\"מ/ל' בשיוט לבין 9.6 ק\"מ/ל' ביום המבחן ... בהחלט נאה ברכב כזה."
+    },
+    "energy_kwh_per_100km": {
+      "value": null,
+      "evidence_he": null
+    },
+    "trunk_l": {
+      "value": null,
+      "evidence_he": "תא המטען שימושי, ומוטות החיזוק הגלויים מזכירים שמדובר בגרסה שנבנתה ברצינות"
+    },
+    "length_mm": {
+      "value": null,
+      "evidence_he": null
+    },
+    "wheelbase_mm": {
+      "value": null,
+      "evidence_he": null
+    },
+    "pros_he": [
+      "ביצועים",
+      "התנהגות כביש",
+      "תמורה למחיר"
+    ],
+    "cons_he": [
+      "נוחות נסיעה ובידוד רעשים",
+      "שימושיות",
+      "איכות חומרים"
+    ],
+    "pros_en": [
+      "Performance",
+      "Road behavior",
+      "Value for money"
+    ],
+    "cons_en": [
+      "Ride comfort and noise insulation",
+      "Practicality",
+      "Material quality"
+    ],
+    "verdict_he": "אלנטרה N ידנית היא מכונית ספורט אמיתית במחיר סביר, עם ביצועים מרשימים והתנהגות כביש מצוינת. היא פחות נוחה ומרווחת, עם איכות חומרים בסיסית, אך מתאימה מאוד לנהגים שמחפשים חווית נהיגה טהורה. היחידה שנותרה כיום עם תיבה ידנית במחיר כזה, וככזו ראויה לציון והערכה.",
+    "verdict_en": "The manual Elantra N is a true sports car at a reasonable price, offering impressive performance and excellent road behavior. It is less comfortable and spacious, with basic material quality, but very well suited for drivers seeking a pure driving experience. It is the only one left today with a manual gearbox at this price, and as such is worthy of recognition and appreciation.",
+    "aspect_scores": {
+      "performance": {
+        "score": 5,
+        "evidence_he": "יד הגורל... יחד עם זאת תהיה אחת האחרונות שתישא את לפיד ההנאה מנהיגה לחובבי הרכב בתחומים העממיים"
+      },
+      "comfort": {
+        "score": 2,
+        "evidence_he": "הכיול קשיח, הצמיגים ספורטיביים ורעשי כביש ורוח נוכחים, בעיקר במהירויות גבוהות"
+      },
+      "practicality": {
+        "score": 2,
+        "evidence_he": "מאחור המרחב סביר, מרווח הרגליים טוב אך מרווח הראש מוגבל ואין פתחי מיזוג"
+      },
+      "tech": {
+        "score": 3,
+        "evidence_he": "צג \"10.25 עם צימוד סלולרי, מערכת שמע של בוז ועוד"
+      },
+      "quality": {
+        "score": 2,
+        "evidence_he": "סביבם מורגשת פלסטיקה פשוטה מהמקובל. חלק מהפרטים מאכזבים: כיוון מושב ידני, איכות ידיות ממוצעת"
+      },
+      "value": {
+        "score": 5,
+        "evidence_he": "מחירה של יונדאי אלנטרה N הוא 225,000 שקלים לגרסה הידנית – 10,000 שקלים פחות מאשר הגרסה האוטומטית"
+      },
+      "efficiency": {
+        "score": 4,
+        "evidence_he": "צריכת הדלק נעה בין 13.6 ק\"מ/ל' בשיוט לבין 9.6 ק\"מ/ל' ביום המבחן ... בהחלט נאה ברכב כזה."
+      },
+      "fun": {
+        "score": 5,
+        "evidence_he": "התיבה מצוינת, עם מהלך קצר ודיוק גבוה. מערכת התאמת סל\"ד הופכת את הורדת ההילוכים למהנה"
+      }
+    },
+    "tags": [
+      "enthusiast",
+      "budget",
+      "tech"
+    ]
+  }
+}

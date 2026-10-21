@@ -1,0 +1,13 @@
+.venv/
+.git/
+.agents/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+.env
+mlflow.db
+mlruns/
+mlartifacts/
+eval/results/
+data/raw/_probe_summary.json
