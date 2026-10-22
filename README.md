@@ -4,12 +4,52 @@ A proof-of-concept chatbot that helps users understand and compare the 8 cars re
 
 ## Run it
 
-Requirements: Docker (with Compose) and a Microsoft Foundry endpoint with a chat model, a smaller "fast" chat model and `text-embedding-3-large`. Nothing else is installed on the host.
+This is the quickest way to run everything: one command starts the database, the data pipeline, the API, the UI and MLflow. Nothing but Docker is installed on the host.
+
+**Requirements**
+
+- Docker with Compose v2 (Docker Desktop on Windows or macOS), running.
+- About 4 GB of free RAM for the containers, and internet access on the first start (the articles are downloaded and the models are called).
+- A Microsoft Foundry resource with three deployments: a chat model, a smaller "fast" chat model (planning, extraction, translation) and `text-embedding-3-large`. The chat models must support tool calling and structured output.
+
+**1. Configure `.env`**
 
 ```powershell
-copy .env.example .env      # then fill in FOUNDRY_ENDPOINT, FOUNDRY_API_KEY and the *_DEPLOYMENT names
+copy .env.example .env      # macOS/Linux: cp .env.example .env
+```
+
+Open `.env` and set these values. Leave everything else as it is: Compose overrides the Cosmos, API and MLflow addresses for the containers.
+
+| Variable                      | Value                                                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `FOUNDRY_ENDPOINT`            | The OpenAI-compatible base URL, ending in `/openai/v1`, for example `https://<resource>.openai.azure.com/openai/v1` |
+| `FOUNDRY_API_KEY`             | The resource key. Leave it empty to use Entra ID (`az login`), which only works outside Docker                      |
+| `FOUNDRY_CHAT_DEPLOYMENT`     | Deployment name (not model name) of the main chat model                                                            |
+| `FOUNDRY_FAST_DEPLOYMENT`     | Deployment name of the smaller chat model                                                                          |
+| `FOUNDRY_EMBED_DEPLOYMENT`    | Deployment name of `text-embedding-3-large`                                                                        |
+| `EMBED_DIMENSIONS`            | Keep `1536`. The vector index is created with it and cannot be changed later                                       |
+
+`.env` stays on your machine: it is read by Compose at start-up and is never copied into the image.
+
+**2. Build and start**
+
+```powershell
 docker compose up -d --build
 ```
+
+The first build takes a few minutes. Compose then starts the services in order: `cosmos` (the database) → `init` (a one-shot job that loads the data) → `api` → `ui`. `mlflow` starts alongside `cosmos`.
+
+**3. Wait until it is ready**
+
+```powershell
+docker compose logs -f init     # the data pipeline; ends with the numbers of cars and chunks loaded (8 cars, 110 chunks)
+docker compose ps               # api and ui show "healthy" when ready; init shows "Exited (0)", which is correct
+Invoke-RestMethod http://localhost:8000/health    # macOS/Linux: curl http://localhost:8000/health
+```
+
+`/health` reports `cosmos` with 8 cars and `foundry` with 1536 dimensions when everything is connected. Press Ctrl+C to leave the `logs` command; the containers keep running.
+
+**4. Open the app**
 
 | URL                        | What                                                          |
 | -------------------------- | ------------------------------------------------------------- |
@@ -23,6 +63,18 @@ The first start builds the image (a few minutes) and waits for the services in o
 The scraped pages and the extraction, translation and embedding caches are written inside the `init` container, not into your working tree. Whenever that container is recreated (after `docker compose down` or a rebuild), `init` repeats the full run and upserts the same documents into the existing database. Stop with `docker compose down`; add `-v` to also delete the database and MLflow volumes. On Windows, `scripts/dev.ps1 up|down|logs` are shortcuts.
 
 Ports are published on `127.0.0.1` only, so the services are not exposed to the network. If a page hangs on `localhost` but works on `http://127.0.0.1:8501`, the browser is taking the IPv6 route through the WSL relay (`wslrelay.exe`); use the `127.0.0.1` address.
+
+**5. Try it.** Open http://localhost:8501 and ask a question, or paste prompts from [Try it: test prompts and sessions](#try-it-test-prompts-and-sessions). Each turn shows up as a trace in MLflow.
+
+**Troubleshooting**
+
+| Symptom                                                                          | Cause and fix                                                                                                                                                                                              |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Bind for 0.0.0.0:8000 failed: port is already allocated`; `api` and `ui` stay in `Created` | Another program uses the port. Set `API_HOST_PORT=8001` (and `UI_HOST_PORT` if 8501 is taken) in `.env`, then run `docker compose up -d`. The API is then at `http://localhost:8001`. The UI reaches the API inside the network, so it is not affected. |
+| `init` exits with an error                                                       | Read `docker compose logs init`. Usually the `FOUNDRY_*` values are wrong (check the endpoint ends in `/openai/v1` and the names are deployments) or there is no internet access. Fix `.env`, then `docker compose up -d` re-runs it. |
+| `api` is `unhealthy` or restarts                                                 | `docker compose logs api`. It starts only after `init` succeeds and `mlflow` is healthy. If tracing cannot reach `mlflow`, restart both: `docker compose restart mlflow api`.                                |
+| The chat answers "nothing to answer from" or lists no cars                       | The database is empty. Re-run `docker compose run --rm init`, then `docker compose restart api` (the keyword index is built when the API starts).                                                         |
+| Start over from zero                                                             | `docker compose down -v` deletes the database and MLflow volumes. Then `docker compose up -d --build`.                                                                                                     |
 
 Other commands run inside the same image:
 
@@ -188,6 +240,8 @@ Paste these into the UI (http://localhost:8501) or the terminal chat (`.\scripts
 The automated version of these checks is the golden set (`eval/golden.jsonl`, 26 cases). Run `.\scripts\dev.ps1 eval --judge`, or `docker compose run --rm eval` against the Docker stack.
 
 ## Approach
+
+**In short.** The 8 articles are turned into two stores in Cosmos DB: one structured record per car (exact facts) and 110 section-level text chunks (opinions), each in Hebrew and in English, with embeddings. A LangGraph agent answers each turn with two LLM calls: the first plans (language, which cars, what the user wants, what profile details they revealed), plain Python then runs the plan against the stores (exact SQL for facts, hybrid vector + BM25 search for opinions), and the second call writes an answer from the retrieved text only, with `[n]` citations. The agent keeps a per-conversation user profile, so preferences are inferred gradually and each recommendation ends with at most one useful question. Details follow; the [Architecture](#architecture) section has the diagram.
 
 The design rests on one observation: the articles contain two kinds of knowledge, and each needs a different kind of retrieval.
 
