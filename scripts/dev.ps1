@@ -10,7 +10,7 @@
 param(
     [Parameter(Position = 0)]
     [ValidateSet("help", "up", "down", "logs", "setup", "emulator", "emulator-stop", "emulator-wipe", "smoke", "smoke-cosmos", "smoke-foundry",
-                 "smoke-mlflow", "mlflow", "probe", "ingest", "reset-db", "db-stats", "retrieve", "api", "ui", "chat",
+                 "smoke-mlflow", "mlflow", "probe", "ingest", "clean-cache", "reset-db", "db-stats", "retrieve", "api", "ui", "chat",
                  "test", "eval", "lint", "graph")]
     [string]$Task = "help",
     [Parameter(ValueFromRemainingArguments = $true)]
@@ -48,6 +48,7 @@ Local venv development:
   mlflow         local MLflow UI/tracking server on http://localhost:5000 (store: mlflow.db)
   probe          download/cache the 8 articles and report structure
   ingest         run ingestion pipeline (extra args passed through, e.g. ingest --stage chunk --force)
+  clean-cache    delete data/raw + data/processed (HTML, parsed, extractions, translations, embeddings); keeps data/urls.txt
   reset-db       drop + recreate cars/chunks containers (needed after EMBED_DIMENSIONS change)
   db-stats       container doc counts + vector policy
   retrieve       retrieval check: filter cases + hit@5 vector/bm25/hybrid (or: retrieve -q "query")
@@ -88,6 +89,13 @@ Local venv development:
     }
     "probe"    { Invoke-Py (@("$skills\autochat-ingestion\scripts\probe_articles.py") + $Rest) }
     "ingest"   { Invoke-Py (@("-m", "autochat.ingestion.pipeline") + $Rest) }
+    "clean-cache" {
+        # a cold ingestion run: re-scrape, re-extract (LLM), re-translate, re-embed. data/urls.txt is the input and stays.
+        foreach ($rel in @("data\raw", "data\processed")) {
+            $dir = Join-Path $repo $rel
+            if (Test-Path $dir) { Remove-Item $dir -Recurse -Force; Write-Host "removed $rel" } else { Write-Host "(no $rel)" }
+        }
+    }
     "reset-db" { Invoke-Py @("$skills\cosmos-emulator\scripts\cosmos_admin.py", "reset") }
     "db-stats" { Invoke-Py @("$skills\cosmos-emulator\scripts\cosmos_admin.py", "stats") }
     "retrieve" { Invoke-Py (@("$skills\autochat-agent\scripts\retrieval_check.py") + $Rest) }

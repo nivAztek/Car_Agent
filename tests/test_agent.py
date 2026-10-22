@@ -76,6 +76,17 @@ def test_validate_delta_requires_verbatim_quote() -> None:
         "אני רוצה רכב חשמלי",
     )
     assert clean.powertrain_pref == ["ev"]
+    # a budget without any figure in the quote is a guess ("cheapest electric car" is not a budget)
+    clean, dropped = validate_delta(
+        {"budget_max_ils": 114_990, "evidence": [{"field": "budget_max_ils", "quote": "the cheapest electric car"}]},
+        "I want the cheapest electric car",
+    )
+    assert clean.budget_max_ils is None and dropped == ["budget_max_ils"]
+    clean, _ = validate_delta(
+        {"budget_max_ils": 250_000, "evidence": [{"field": "budget_max_ils", "quote": "עד 250 אלף"}]},
+        "התקציב שלי עד 250 אלף",
+    )
+    assert clean.budget_max_ils == 250_000
     # replace_lists only with an explicit change-of-mind cue
     ev = {"field": "powertrain_pref", "quote": "petrol is fine"}
     change = {"powertrain_pref": ["ice"], "replace_lists": ["powertrain_pref"], "evidence": [ev]}

@@ -64,8 +64,9 @@ services:
       start_period: 20s
     restart: unless-stopped
 
-  # One-shot: create containers and upsert cars + chunks from the committed data/processed files
-  # (extractions, translations and embeddings are cached, so no LLM calls). Idempotent.
+  # One-shot: run the whole ingestion pipeline (scrape, LLM extraction, translate, embed) and upsert cars + chunks.
+  # Needs internet access and the FOUNDRY_* values. The caches live in this container, so a recreated container
+  # repeats the full run. Idempotent (same ids are upserted).
   # Re-ingest: docker compose run --rm init python -m autochat.ingestion.pipeline --force
   init:
     <<: *app
@@ -80,7 +81,7 @@ services:
     <<: *app
     container_name: autochat-api
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:${API_HOST_PORT:-8000}:8000"
     depends_on:
       init:
         condition: service_completed_successfully
@@ -105,7 +106,7 @@ services:
       - --server.address=0.0.0.0
       - --server.port=8501
     ports:
-      - "127.0.0.1:8501:8501"
+      - "127.0.0.1:${UI_HOST_PORT:-8501}:8501"
     depends_on:
       api:
         condition: service_healthy

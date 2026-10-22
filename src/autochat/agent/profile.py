@@ -89,6 +89,9 @@ def _words(text: str) -> list[str]:
 # Fields the small planner model tends to over-infer: the quote must also contain an explicit cue.
 # ("I can charge at home" is not a powertrain preference; "compare X and Y" is not liking them.)
 FIELD_CUES: dict[str, re.Pattern[str]] = {
+    # a budget needs a figure: "cheapest electric car" made the planner guess a budget (the lowest price)
+    "budget_max_ils": re.compile(r"\d|thousand|million|אלף|מיליון", re.I),
+    "budget_min_ils": re.compile(r"\d|thousand|million|אלף|מיליון", re.I),
     "powertrain_pref": re.compile(
         r"electric|\bevs?\b|hybrid|plug|phev|petrol|gasoline|gas\b|diesel|benzin|fuel|"
         r"חשמל|היבריד|הייבריד|פלאג|בנזין|דיזל|דלק",

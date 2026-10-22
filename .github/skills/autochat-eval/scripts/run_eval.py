@@ -198,6 +198,45 @@ def expectations_for(case: dict) -> dict:
     return {"case_id": case["id"], "case_type": case["type"], "lang": case["lang"], "expect": case["expect"]}
 
 
+DATASET_NAME = "autochat-golden"
+
+
+def sync_golden_dataset(golden_path: str):
+    """Create/update the MLflow evaluation dataset `autochat-golden` from golden.jsonl (idempotent: records
+    are de-duplicated by inputs). Each record: inputs {case_id, message (last turn), turns}, expectations.
+    Visible in the MLflow UI under the experiment's Datasets tab. Returns the dataset or None on failure."""
+    import mlflow
+    from mlflow.genai.datasets import create_dataset, get_dataset, search_datasets
+
+    cases = [json.loads(line) for line in Path(golden_path).read_text(encoding="utf-8").splitlines() if line.strip()]
+    records = [
+        {
+            "inputs": {"case_id": c["id"], "message": c["turns"][-1], "turns": c["turns"]},
+            "expectations": expectations_for(c),
+        }
+        for c in cases
+    ]
+    try:
+        exp = mlflow.get_experiment_by_name("autochat-eval")
+        found = search_datasets(
+            experiment_ids=[exp.experiment_id] if exp else None, filter_string=f"name = '{DATASET_NAME}'"
+        )
+        if found:
+            dataset = get_dataset(dataset_id=found[0].dataset_id)
+        else:
+            dataset = create_dataset(
+                name=DATASET_NAME,
+                experiment_id=exp.experiment_id if exp else None,
+                tags={"source": "eval/golden.jsonl", "purpose": "autochat golden set"},
+            )
+        dataset.merge_records(records)
+        print(f"MLflow dataset '{DATASET_NAME}': {len(records)} cases synced")
+        return dataset
+    except Exception as exc:  # noqa: BLE001 - the dataset is an extra; never fail the eval over it
+        print(f"MLflow dataset sync skipped: {type(exc).__name__}: {str(exc)[:200]}")
+        return None
+
+
 async def run_case_in_process(graph, case: dict) -> dict:
     """Uses the traced runtime wrapper (one MLflow trace per turn, session = thread_id)."""
     from autochat.agent.runtime import run_turn  # type: ignore[import-not-found]
@@ -358,7 +397,13 @@ def log_to_mlflow(
     scorers = build_scorers(args.judge and has_traces)
     if args.judge and not has_traces:
         print("MLflow: some cases have no trace -> LLM judges skipped (retrieval judges need RETRIEVER spans)")
+    dataset = sync_golden_dataset(args.golden)
     with mlflow.start_run(run_name=f"eval-{stamp}"):
+        if dataset is not None:
+            try:
+                mlflow.log_input(dataset, context="eval")
+            except Exception as exc:  # noqa: BLE001
+                print(f"MLflow: could not link dataset to run: {type(exc).__name__}: {str(exc)[:150]}")
         mlflow.log_params(
             {
                 "golden": Path(args.golden).name,
